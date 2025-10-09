@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>World Brief • Politics & Markets</title>
+  <meta name="description" content="Bullet-point updates from multiple sources (news, RSS, Instagram Business Discovery)." />
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="World Brief">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="title">
+      <img src="icon.png" alt="" class="logo">
+      <h1>World Brief</h1>
+    </div>
+    <div class="actions">
+      <button id="refreshBtn">↻ Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="filters">
+      <label>
+        Language:
+        <select id="langSelect">
+          <option value="en" selected>English</option>
+          <option value="ar">Arabic</option>
+          <option value="fr">French</option>
+          <option value="es">Spanish</option>
+          <option value="de">German</option>
+          <option value="it">Italian</option>
+        </select>
+      </label>
+      <label>
+        Items:
+        <select id="limitSelect">
+          <option value="15" selected>15</option>
+          <option value="30">30</option>
+          <option value="50">50</option>
+        </select>
+      </label>
+      <label class="tog">
+        <input type="checkbox" id="toggleNewsdata" checked>
+        News APIs
+      </label>
+      <label class="tog">
+        <input type="checkbox" id="toggleRSS" checked>
+        RSS
+      </label>
+      <label class="tog">
+        <input type="checkbox" id="toggleIG" checked>
+        Instagram (Business)
+      </label>
+    </section>
+
+    <ul id="list" class="list" aria-live="polite"></ul>
+
+    <section class="howto">
+      <h2>Add to iPhone Home Screen</h2>
+      <ol>
+        <li>Open this site in Safari.</li>
+        <li>Tap <strong>Share</strong> → <strong>Add to Home Screen</strong>.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <small>Built for personal use. Instagram access uses official Graph API Business Discovery (requires Business/Creator accounts + permissions).</small>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
