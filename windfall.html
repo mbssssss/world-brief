@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Spend the Windfall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: banknote-engraved money ledger. Start = guilloche hero; Shop = catalog grid + sticky receipt; Results = decade report. */
+:root {
+  --paper: #f1f4f0;
+  --card: #ffffff;
+  --ink: #10263a;
+  --muted: #56697a;
+  --line: #d3ddd8;
+  --accent: #9a6a12;
+  --accent-soft: #f4e8cf;
+  --good: #1d6b4c;
+  --bad: #b23b2a;
+  --chip: #e5ece8;
+  --f-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0c1720; --card: #12212c; --ink: #e5ece8; --muted: #93a6b2; --line: #22394a;
+    --accent: #e3b24f; --accent-soft: #33280f; --good: #5cc797; --bad: #f07b65; --chip: #1a2d3a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0c1720; --card: #12212c; --ink: #e5ece8; --muted: #93a6b2; --line: #22394a;
+  --accent: #e3b24f; --accent-soft: #33280f; --good: #5cc797; --bad: #f07b65; --chip: #1a2d3a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+#app { max-width: 1180px; margin: 0 auto; padding: 0 16px; padding-block: 20px 60px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 800; letter-spacing: .01em; line-height: 1.02; margin: 0; text-wrap: balance; text-transform: uppercase; }
+.mono, .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn { background: var(--ink); color: var(--paper); border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 600; }
+.btn:hover { filter: brightness(1.15); }
+.btn.gold { background: var(--accent); color: #fff; }
+:root[data-theme="dark"] .btn.gold { color: #1a1205; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.gold { color: #1a1205; } }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- Start ---------- */
+.hero { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--card); padding: 40px 28px; display: grid; gap: 14px; }
+.hero canvas { position: absolute; right: -120px; top: -90px; width: 520px; height: 520px; max-width: none; pointer-events: none; opacity: .55; }
+.hero > *:not(canvas) { position: relative; }
+.hero h1 { font-size: clamp(52px, 10vw, 112px); }
+.hero h1 span { color: var(--accent); }
+.hero p { max-width: 58ch; margin: 0; color: var(--muted); font-size: 16px; }
+.fortunes { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 22px; }
+.fortune { text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 4px; transition: border-color .15s, transform .15s; }
+.fortune:hover { border-color: var(--accent); transform: translateY(-2px); }
+.fortune .amt { font-family: var(--f-display); font-weight: 800; font-size: 40px; line-height: 1; color: var(--ink); }
+.fortune .src { font-weight: 600; }
+.fortune .sub { font-size: 13px; color: var(--muted); }
+.custom { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.custom input { font: 500 16px var(--f-mono); padding: 10px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); width: 220px; max-width: 100%; }
+.rules { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.rules div { border-top: 2px solid var(--ink); padding-top: 10px; }
+.rules b { display: block; font-family: var(--f-display); font-size: 22px; text-transform: uppercase; }
+.rules p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+
+/* ---------- Shop ---------- */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); padding-block: 10px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: end; justify-content: space-between; }
+.balance .eyebrow { display: block; }
+.balance .big { font-family: var(--f-display); font-weight: 800; font-size: clamp(36px, 7vw, 60px); line-height: 1; font-variant-numeric: tabular-nums; }
+.balance .of { color: var(--muted); font-size: 13px; }
+.meter { height: 6px; border-radius: 3px; background: var(--chip); overflow: hidden; margin-top: 6px; width: min(360px, 80vw); display: flex; }
+.meter i { display: block; height: 100%; }
+.topbar .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; padding-block: 14px 4px; scrollbar-width: thin; }
+.tab { white-space: nowrap; border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; font-weight: 600; font-size: 14px; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.tab .ct { font-family: var(--f-mono); font-size: 12px; opacity: .7; margin-left: 4px; }
+.shopwrap { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 22px; margin-top: 10px; align-items: start; }
+@media (max-width: 860px) { .shopwrap { grid-template-columns: minmax(0, 1fr); } }
+.catintro { color: var(--muted); margin: 6px 0 14px; max-width: 70ch; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.item { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.item.owned { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.item h3 { font-family: var(--f-body); text-transform: none; font-weight: 700; font-size: 16px; letter-spacing: 0; line-height: 1.25; }
+.item .price { font-family: var(--f-display); font-weight: 800; font-size: 30px; line-height: 1; }
+.item .blurb { font-size: 13px; color: var(--muted); margin: 0; flex: 1; }
+.tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.tag.up { color: var(--good); }
+.tag.down { color: var(--bad); }
+.tag.gone { color: var(--accent); }
+.buyrow { display: flex; align-items: center; gap: 8px; }
+.buyrow .btn { padding: 7px 14px; font-size: 14px; }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.qty button { border: 0; background: transparent; width: 32px; height: 32px; font-size: 18px; }
+.qty span { min-width: 22px; text-align: center; font-family: var(--f-mono); }
+.invamt { font-family: var(--f-display); font-weight: 800; font-size: 26px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-family: var(--f-mono); }
+.chips button:hover { border-color: var(--accent); }
+.risk { display: flex; gap: 3px; align-items: center; font-size: 12px; color: var(--muted); }
+.risk i { width: 14px; height: 6px; border-radius: 2px; background: var(--chip); }
+.risk i.on { background: var(--accent); }
+
+.receipt { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 110px); background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; }
+@media (max-width: 860px) { .receipt { position: static; } }
+.receipt h2 { font-size: 24px; }
+.rlist { display: grid; gap: 6px; max-height: 320px; overflow-y: auto; font-size: 13.5px; }
+.rlist .row { display: flex; justify-content: space-between; gap: 10px; }
+.rlist .row span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.rlist .empty { color: var(--muted); }
+.split { display: grid; gap: 4px; font-size: 13px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.split .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 6px; }
+.receipt .btn { width: 100%; padding: 13px; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 999px; font-weight: 600; font-size: 14px; z-index: 20; max-width: calc(100% - 32px); text-align: center; }
+
+/* ---------- Results ---------- */
+.reshead { display: grid; gap: 8px; padding-block: 10px 18px; border-bottom: 1px solid var(--line); }
+.reshead .title { font-size: clamp(40px, 8vw, 84px); }
+.reshead .title em { font-style: normal; color: var(--accent); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 18px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
+.stat .v { font-family: var(--f-display); font-weight: 800; font-size: 40px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.stat .d { font-size: 13px; color: var(--muted); }
+.up { color: var(--good); } .down { color: var(--bad); }
+.cols { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 22px; margin-top: 22px; }
+@media (max-width: 860px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; min-width: 0; }
+.panel h2 { font-size: 24px; margin-bottom: 10px; }
+.chart { width: 100%; overflow-x: auto; }
+.chart svg { display: block; width: 100%; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+.log { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.log li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; font-size: 14px; }
+.log .yr { font-family: var(--f-mono); color: var(--accent); }
+table.break { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.break td { padding: 6px 0; border-bottom: 1px solid var(--line); }
+table.break td:last-child { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.resactions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+@media (prefers-reduced-motion: reduce) { .fortune, .fortune:hover { transition: none; transform: none; } }
+</style>
+
+<div id="app">
+  <section id="start">
+    <div class="hero">
+      <canvas id="guilloche" width="1040" height="1040" aria-hidden="true"></canvas>
+      <span class="eyebrow">A money game · real-world prices</span>
+      <h1>Spend the <span>Windfall</span></h1>
+      <p>You just came into serious money. Pick how much, then go shopping: supercars, mansions, first-class trips, watches, yachts, art, index funds, Bitcoin, charity. When you're done, fast-forward ten years and see what's left.</p>
+      <div id="resume"></div>
+    </div>
+    <div class="fortunes" id="fortunes"></div>
+    <div class="custom">
+      <label class="eyebrow" for="customAmt">Or name your own number</label>
+      <input id="customAmt" inputmode="numeric" placeholder="$7,500,000" autocomplete="off">
+      <button class="btn ghost" id="customGo">Start with this</button>
+    </div>
+    <div class="rules">
+      <div><b>Prices are real</b><p>Approximate 2025–26 US retail or market prices. Your cash and your conscience are the only limits.</p></div>
+      <div><b>Things cost money to own</b><p>Yachts, jets and mansions carry yearly upkeep. Cars lose value. Some watches, homes and art gain it.</p></div>
+      <div><b>Ten years later</b><p>Markets swing year by year. You get a net worth, a Lifestyle score and a Legacy score.</p></div>
+    </div>
+  </section>
+
+  <section id="shop" hidden>
+    <div class="topbar">
+      <div class="balance">
+        <span class="eyebrow" id="scenarioLabel">Cash left to spend</span>
+        <div class="big num" id="cashBig">$0</div>
+        <div class="of" id="cashOf"></div>
+        <div class="meter" id="meter"></div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="restartBtn">New fortune</button>
+        <button class="btn gold" id="simBtnTop">Fast-forward 10 years →</button>
+      </div>
+    </div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="shopwrap">
+      <div>
+        <p class="catintro" id="catIntro"></p>
+        <div class="grid" id="grid"></div>
+      </div>
+      <aside class="receipt" aria-label="Your receipt">
+        <h2>Receipt</h2>
+        <div class="rlist" id="rlist"></div>
+        <div class="split" id="split"></div>
+        <p class="hint" id="idleHint"></p>
+        <button class="btn gold" id="simBtn">Fast-forward 10 years →</button>
+      </aside>
+    </div>
+  </section>
+
+  <section id="results" hidden></section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+// ---------- Catalog (approx. 2025–26 US prices) ----------
+// rate: average yearly value change; vol: yearly wobble; upkeep: share of value per year; flat: $ per year
+const CATS = [
+  { id: 'cars', name: 'Cars', intro: 'New-car MSRP or typical dealer price. Most cars lose value the day you drive them home; a few rare ones hold it.', items: [
+    ['camry', 'Toyota Camry XSE', 34000, 'The sensible choice. Somebody has to drive to Costco.', { rate: -0.10, upkeep: 0.05, fun: 1 }],
+    ['bronco', 'Ford Bronco Raptor', 82000, '418 hp, 37-inch tires, doors that come off.', { rate: -0.08, upkeep: 0.04, fun: 3 }],
+    ['plaid', 'Tesla Model S Plaid', 95000, '0–60 in 1.99 seconds. Free updates, expensive tires.', { rate: -0.15, upkeep: 0.03, fun: 3 }],
+    ['911', 'Porsche 911 Carrera S', 145000, 'The default answer to "what sports car should I buy". Holds value well.', { rate: -0.05, upkeep: 0.04, fun: 6 }],
+    ['g63', 'Mercedes-AMG G 63', 185000, 'A boxy V8 status symbol with a waitlist.', { rate: -0.08, upkeep: 0.04, fun: 6 }],
+    ['urus', 'Lamborghini Urus SE', 258000, 'Plug-in hybrid super-SUV. Seats four, frightens many.', { rate: -0.12, upkeep: 0.04, fun: 8 }],
+    ['296', 'Ferrari 296 GTB', 345000, '819 hp V6 hybrid. Ferrari may ask what else you own.', { rate: -0.06, upkeep: 0.04, fun: 9 }],
+    ['cullinan', 'Rolls-Royce Cullinan Series II', 425000, 'A drawing room on wheels. Umbrellas in the doors.', { rate: -0.12, upkeep: 0.03, fun: 9 }],
+    ['revuelto', 'Lamborghini Revuelto', 608000, 'V12 hybrid, 1,001 hp. Sold out for years.', { rate: -0.04, upkeep: 0.04, fun: 10 }],
+    ['tourbillon', 'Bugatti Tourbillon', 4100000, 'One of 250. An $80,000 oil service comes with the territory.', { rate: 0.03, upkeep: 0.03, fun: 15, vol: 0.08 }],
+  ]},
+  { id: 'homes', name: 'Homes', intro: 'Typical asking prices for the neighborhood. Real estate usually appreciates, but taxes, insurance and staff add up.', items: [
+    ['austin', 'Starter home, Austin TX', 450000, '3 bed, 2 bath, a yard, and a very good taco nearby.', { rate: 0.035, upkeep: 0.025, fun: 3 }],
+    ['miami', 'Downtown condo, Miami', 1250000, '2 bed on the 40th floor, Biscayne Bay view.', { rate: 0.04, upkeep: 0.025, fun: 5 }],
+    ['brooklyn', 'Brownstone, Brooklyn', 4500000, 'Four floors, original details, a garden out back.', { rate: 0.04, upkeep: 0.02, fun: 7 }],
+    ['como', 'Lakefront villa, Lake Como', 8500000, 'Boat dock, cypress trees, George Clooney somewhere nearby.', { rate: 0.035, upkeep: 0.02, fun: 14 }],
+    ['island', 'Private island, Bahamas', 12000000, '50 acres, a beach on every side, generators and a staff house.', { rate: 0.03, upkeep: 0.04, fun: 20 }],
+    ['malibu', 'Beachfront house, Malibu', 14000000, 'Carbon Beach. Sunsets included, fire insurance not.', { rate: 0.045, upkeep: 0.02, fun: 16 }],
+    ['aspen', 'Ski-in chalet, Aspen', 18000000, '7 bedrooms, heated driveway, boot room bigger than most apartments.', { rate: 0.04, upkeep: 0.02, fun: 16 }],
+    ['bh', 'Mansion, Beverly Hills', 28000000, 'Gated, 12,000 sq ft, screening room, infinity pool.', { rate: 0.04, upkeep: 0.02, fun: 20 }],
+    ['nyc', "Penthouse, Billionaires' Row", 45000000, 'Full-floor on 57th Street. Central Park out every window.', { rate: 0.025, upkeep: 0.02, fun: 22 }],
+  ]},
+  { id: 'travel', name: 'Travel', intro: "Experiences don't hold value. You pay once and keep the memories. They count toward your Lifestyle score.", items: [
+    ['biz', 'Business class to Tokyo', 7500, 'Round trip, lie-flat seat, a very good wagyu dinner on arrival.', { gone: true, fun: 2 }],
+    ['superbowl', 'Super Bowl, lower-bowl seats for two', 15000, 'Plus a flight, a hotel, and a $20 beer.', { gone: true, fun: 4 }],
+    ['monaco', 'Monaco Grand Prix, Paddock Club for two', 25000, 'Champagne over the pit lane. Earplugs provided.', { gone: true, fun: 5 }],
+    ['europe', 'Two weeks in Europe, five-star, for two', 40000, 'Paris, Amalfi, Santorini. Suites the whole way.', { gone: true, fun: 5 }],
+    ['maldives', 'Maldives overwater villa, one week', 45000, 'Glass floor, private pool, a slide straight into the lagoon.', { gone: true, fun: 6 }],
+    ['antarctica', 'Antarctica expedition cruise for two', 55000, 'Penguins, icebergs, and the Drake Passage.', { gone: true, fun: 7 }],
+    ['safari', '10-day luxury safari for two', 70000, 'Serengeti migration from a lodge with a wine cellar.', { gone: true, fun: 7 }],
+    ['jetla', 'Private jet round trip, NY ↔ LA', 90000, 'Midsize charter. No security line, bring the dog.', { gone: true, fun: 4 }],
+    ['world', 'Around the world by private jet', 210000, '24 days, 9 countries, a chef on board. Price per person.', { gone: true, fun: 14 }],
+    ['charter', 'Superyacht charter, one week in the Med', 450000, '60 m yacht with crew of 15. Fuel and food extra in real life.', { gone: true, fun: 12 }],
+    ['space', 'Suborbital spaceflight seat', 600000, 'About four minutes of weightlessness and a view of Earth from the edge of space.', { gone: true, fun: 18 }],
+  ]},
+  { id: 'style', name: 'Style', intro: 'Boutique retail prices. Clothes lose value fast; a few iconic bags beat inflation on the resale market.', items: [
+    ['jordan', 'Air Jordan 1 Retro High', 180, 'A classic. You can afford more than one pair.', { rate: -0.3, fun: 0.2 }],
+    ['keepall', 'Louis Vuitton Keepall 55', 2800, 'The weekend bag of the jet set.', { rate: -0.05, fun: 0.6 }],
+    ['suit', 'Bespoke Savile Row suit', 9000, 'Three fittings, 80 hours of hand-stitching.', { rate: -0.25, fun: 1.5 }],
+    ['chanel', 'Chanel Classic Flap, medium', 11300, 'Chanel raises the price nearly every year.', { rate: 0.03, fun: 2 }],
+    ['birkin', 'Hermès Birkin 30', 13000, 'Retail price, if the boutique will sell you one. Resale is often double.', { rate: 0.05, fun: 3 }],
+    ['wardrobe', 'A full year of designer wardrobe', 60000, 'Gucci, Prada, Loro Piana, a stylist on call.', { rate: -0.45, fun: 4 }],
+  ]},
+  { id: 'watches', name: 'Watches & Jewelry', intro: 'Watches with waitlists trade above retail on the secondary market; those are the prices shown.', items: [
+    ['cartier', 'Cartier Love bracelet', 7350, 'Screws on, comes with its own screwdriver.', { rate: 0.02, fun: 1.5 }],
+    ['speedy', 'Omega Speedmaster Moonwatch', 7600, 'Went to the Moon. Will go to brunch.', { rate: -0.02, fun: 1.5 }],
+    ['sub', 'Rolex Submariner Date', 10650, 'The most recognizable watch in the world.', { rate: 0.03, fun: 2 }],
+    ['ro', 'Audemars Piguet Royal Oak 41mm', 45000, 'Octagonal bezel, about 1.5× retail on the gray market.', { rate: 0.02, fun: 4, vol: 0.08 }],
+    ['nautilus', 'Patek Philippe Nautilus', 135000, 'Secondary-market price. The boutique waitlist is about a decade.', { rate: 0.02, fun: 6, vol: 0.1 }],
+    ['ring', '5-carat diamond ring', 150000, 'Round brilliant, top color and clarity. Diamonds resell for far less than retail.', { rate: -0.05, fun: 4 }],
+    ['rm', 'Richard Mille RM 11-03', 300000, 'Ultralight carbon chronograph. Tennis players wear these mid-match.', { rate: 0.01, fun: 7, vol: 0.1 }],
+  ]},
+  { id: 'toys', name: 'Toys', intro: 'Boats and aircraft lose value and are expensive to run. Budget roughly 10% of a yacht\'s price every year for crew, docking and fuel.', items: [
+    ['jetski', 'Sea-Doo jet ski', 15000, 'Two seats, 300 hp, a trailer to match.', { rate: -0.12, upkeep: 0.06, fun: 2 }],
+    ['horse', 'Thoroughbred yearling', 500000, 'Kentucky bloodlines. Training runs about $60K a year.', { rate: -0.15, flat: 60000, fun: 5, vol: 0.3 }],
+    ['heli', 'Robinson R66 helicopter', 1450000, '5 seats, turbine engine, lands on your lawn.', { rate: -0.05, upkeep: 0.15, fun: 9 }],
+    ['sunseeker', 'Sunseeker 65 sport yacht', 3500000, '65 ft, 3 cabins, 34 knots.', { rate: -0.07, upkeep: 0.10, fun: 12 }],
+    ['cj4', 'Cessna Citation CJ4 Gen2', 11500000, 'Light jet, 10 seats, coast to coast with one stop. About $1.2M a year to operate.', { rate: -0.06, flat: 1200000, fun: 16 }],
+    ['yacht', '50 m superyacht', 45000000, '6 guest cabins, crew of 12, jacuzzi on the sundeck.', { rate: -0.05, upkeep: 0.10, fun: 28 }],
+    ['g700', 'Gulfstream G700', 78000000, 'Flagship business jet, 7,750 nm range. Roughly $4M a year to fly and staff.', { rate: -0.05, flat: 4000000, fun: 30 }],
+  ]},
+  { id: 'art', name: 'Art & Collectibles', intro: 'Recent auction-level prices. Blue-chip art has historically appreciated, with big swings and insurance costs.', items: [
+    ['charizard', '1st Edition Charizard, PSA 10', 400000, 'The holy grail of Pokémon cards.', { rate: 0.04, upkeep: 0.005, fun: 4, vol: 0.25, corr: 0.4 }],
+    ['banksy', 'Banksy signed print', 250000, '"Girl with Balloon", signed edition of 150.', { rate: 0.05, upkeep: 0.005, fun: 3, vol: 0.15, corr: 0.4 }],
+    ['warhol', 'Andy Warhol Marilyn screenprint', 450000, 'From the 1967 portfolio of ten.', { rate: 0.05, upkeep: 0.005, fun: 4, vol: 0.12, corr: 0.4 }],
+    ['basquiat', 'Basquiat painting', 12000000, 'A mid-size 1982 canvas. Museums will ask to borrow it.', { rate: 0.06, upkeep: 0.008, fun: 12, vol: 0.18, corr: 0.5 }],
+    ['trex', 'T. rex skeleton', 30000000, 'Real fossil, 40 feet long. Needs a very tall living room.', { rate: 0.03, upkeep: 0.01, fun: 20, vol: 0.1 }],
+  ]},
+  { id: 'give', name: 'Giving', intro: 'Money given away is gone from your balance and counts toward your Legacy score.', items: [
+    ['wells', 'Clean water wells for 20 villages', 200000, 'Roughly $10K per well, serving thousands of people.', { gone: true, legacy: 6 }],
+    ['mortgage', "Pay off your parents' mortgage", 300000, 'The best call you\'ll ever make.', { gone: true, legacy: 5, fun: 2 }],
+    ['college', 'College funds for 5 nieces and nephews', 500000, 'Four years of tuition, room and board each.', { gone: true, legacy: 7, fun: 1 }],
+    ['scholar', 'Endowed scholarship at your old school', 2000000, 'Funds a full ride every year, forever, with your name on it.', { gone: true, legacy: 10 }],
+    ['wing', 'A hospital wing with your name on it', 25000000, 'A pediatric wing, plus a plaque in the lobby.', { gone: true, legacy: 30 }],
+    ['foundation', 'Start a family foundation', 100000000, 'Grants for decades. Board meetings optional.', { gone: true, legacy: 60 }],
+  ]},
+  { id: 'invest', name: 'Investments', invest: true, intro: 'Money that works while you sleep. Expected returns are long-run averages; any single year can be very different.' },
+];
+const INVEST = [
+  { id: 'hysa', name: 'High-yield savings', mean: 0.040, vol: 0.005, rho: 0, risk: 1, blurb: 'FDIC-insured, boring and safe.' },
+  { id: 'tsy', name: 'US Treasury bonds', mean: 0.043, vol: 0.05, rho: -0.2, risk: 1, blurb: 'Lend to the government. Often rises when stocks fall.' },
+  { id: 'gold', name: 'Gold', mean: 0.05, vol: 0.15, rho: -0.1, risk: 2, blurb: 'A hedge for nervous years. Pays no income.' },
+  { id: 'spx', name: 'S&P 500 index fund', mean: 0.09, vol: 0.16, rho: 1, risk: 3, blurb: '500 big US companies for a 0.03% fee.' },
+  { id: 'apt', name: 'Apartment building', mean: 0.075, vol: 0.09, rho: 0.3, risk: 2, min: 3000000, blurb: '24 units, rent checks every month. Minimum $3M.' },
+  { id: 'tech', name: 'Big Tech stocks', mean: 0.12, vol: 0.30, rho: 0.85, risk: 4, blurb: 'Nvidia, Apple, Microsoft, Alphabet. Higher highs, lower lows.' },
+  { id: 'btc', name: 'Bitcoin', mean: 0.20, vol: 0.65, rho: 0.4, risk: 5, blurb: 'Could triple. Could halve. Sometimes in the same year.' },
+  { id: 'angel', name: 'Angel investing (10 startups)', special: 'angel', risk: 5, min: 250000, blurb: 'Most startups fail; one hit can pay for all of them. Locked up for 8 years. Minimum $250K.' },
+  { id: 'resto', name: 'Open a restaurant', special: 'resto', risk: 5, min: 1500000, blurb: 'Your name on the door. Most close in the first three years. Minimum $1.5M.' },
+];
+const ITEMS = {};
+CATS.forEach(c => (c.items || []).forEach(a => { const [id, name, price, blurb, o] = a; ITEMS[id] = { id, name, price, blurb, cat: c.id, ...o }; }));
+const INV = Object.fromEntries(INVEST.map(i => [i.id, i]));
+const GROUPS = [
+  { key: 'spent', label: 'Experiences', color: 'var(--accent)' },
+  { key: 'gave', label: 'Giving', color: '#8e6fd1' },
+  { key: 'stuff', label: 'Cars, homes & things', color: '#3a7bd5' },
+  { key: 'inv', label: 'Investments', color: 'var(--good)' },
+];
+
+const FORTUNES = [
+  { amt: 2e6, src: 'Scratch-off jackpot', sub: 'Gas station ticket, $20 well spent.' },
+  { amt: 10e6, src: 'Startup acquisition', sub: 'Your 4% stake finally paid off.' },
+  { amt: 50e6, src: 'Mystery inheritance', sub: 'A great-aunt you never met.' },
+  { amt: 250e6, src: 'Powerball lump sum', sub: 'After federal tax. Change your number.' },
+  { amt: 1e9, src: 'Tech founder IPO', sub: 'Officially a billionaire.' },
+];
+
+// ---------- Helpers ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const trimNum = x => (x >= 100 ? x.toFixed(0) : x >= 10 ? x.toFixed(1) : x.toFixed(2)).replace(/\.0+$|(\.\d*?)0+$/, '$1');
+function fmt(n) {
+  const a = Math.abs(n), s = n < 0 ? '−' : '';
+  if (a >= 1e9) return s + '$' + trimNum(a / 1e9) + 'B';
+  if (a >= 1e6) return s + '$' + trimNum(a / 1e6) + 'M';
+  if (a >= 1e5) return s + '$' + Math.round(a / 1e3) + 'K';
+  return s + '$' + Math.round(a).toLocaleString('en-US');
+}
+const full = n => (n < 0 ? '−' : '') + '$' + Math.round(Math.abs(n)).toLocaleString('en-US');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2600); }
+
+// ---------- State ----------
+let S = null; // { budget, src, owned:{id:qty}, inv:{id:amt}, tab }
+const KEY = 'windfall-v1';
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
+function totals() {
+  let spent = 0, gave = 0, stuff = 0, inv = 0;
+  for (const [id, q] of Object.entries(S.owned)) { const it = ITEMS[id]; const v = it.price * q; if (it.cat === 'give') gave += v; else if (it.gone) spent += v; else stuff += v; }
+  for (const v of Object.values(S.inv)) inv += v;
+  return { spent, gave, stuff, inv, cash: S.budget - spent - gave - stuff - inv };
+}
+
+// ---------- Start screen ----------
+function drawGuilloche() {
+  const c = $('#guilloche'), x = c.getContext('2d');
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#9a6a12';
+  x.clearRect(0, 0, c.width, c.height); x.strokeStyle = accent; x.lineWidth = 1.1; x.globalAlpha = 0.6;
+  const cx = 520, cy = 520;
+  const rings = [[300, 70, 23], [380, 60, 29], [220, 50, 17], [460, 30, 37]];
+  for (const [R, a, k] of rings) {
+    for (let phase = 0; phase < 6; phase++) {
+      x.beginPath();
+      for (let t = 0; t <= Math.PI * 2 + 0.01; t += 0.004) {
+        const r = R + a * Math.sin(k * t + phase * Math.PI / 3) * Math.cos(3 * t);
+        const px = cx + r * Math.cos(t), py = cy + r * Math.sin(t);
+        t === 0 ? x.moveTo(px, py) : x.lineTo(px, py);
+      }
+      x.stroke();
+    }
+  }
+}
+function renderStart() {
+  $('#fortunes').innerHTML = FORTUNES.map((f, i) => `
+    <button class="fortune" data-f="${i}">
+      <span class="amt">${fmt(f.amt)}</span>
+      <span class="src">${esc(f.src)}</span>
+      <span class="sub">${esc(f.sub)}</span>
+    </button>`).join('');
+  const prev = load();
+  $('#resume').innerHTML = prev && prev.budget ? `<button class="btn gold" id="resumeBtn">Continue your ${fmt(prev.budget)} spree</button>` : '';
+  drawGuilloche();
+}
+function begin(amt, src) {
+  S = { budget: amt, src, owned: {}, inv: {}, tab: 'cars' };
+  save(); show('shop'); renderShop(true);
+}
+function show(id) { for (const s of ['start', 'shop', 'results']) $('#' + s).hidden = s !== id; window.scrollTo(0, 0); }
+
+// ---------- Shop ----------
+let shownCash = 0, anim;
+function animateCash(to) {
+  cancelAnimationFrame(anim);
+  const from = shownCash, t0 = performance.now(), dur = reduceMotion ? 0 : 450;
+  const step = now => {
+    const p = dur ? Math.min(1, (now - t0) / dur) : 1, e = 1 - Math.pow(1 - p, 3);
+    shownCash = from + (to - from) * e; $('#cashBig').textContent = full(shownCash);
+    if (p < 1) anim = requestAnimationFrame(step);
+  };
+  anim = requestAnimationFrame(step);
+}
+function riskBars(n) { return `<span class="risk">Risk ${[1, 2, 3, 4, 5].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`; }
+function itemTags(it) {
+  const t = [];
+  if (it.cat === 'give') t.push('<span class="tag gone">Donation</span>');
+  else if (it.gone) t.push('<span class="tag gone">Experience</span>');
+  else if (it.rate > 0) t.push(`<span class="tag up">Gains ~${Math.round(it.rate * 100)}%/yr</span>`);
+  else t.push(`<span class="tag down">Loses ~${Math.round(-it.rate * 100)}%/yr</span>`);
+  const up = (it.upkeep || 0) * it.price + (it.flat || 0);
+  if (up >= 1000) t.push(`<span class="tag">Upkeep ~${fmt(up)}/yr</span>`);
+  return t.join('');
+}
+function steps() {
+  const all = [1e4, 1e5, 1e6, 1e7, 1e8, 1e9].filter(x => x <= S.budget / 2 && x >= S.budget / 2000);
+  return all.slice(-3);
+}
+function renderShop(first) {
+  const T = totals();
+  const cat = CATS.find(c => c.id === S.tab);
+  $('#scenarioLabel').textContent = `${S.src} · cash left to spend`;
+  $('#cashOf').textContent = `of ${full(S.budget)}`;
+  if (first) { shownCash = T.cash; $('#cashBig').textContent = full(T.cash); } else animateCash(T.cash);
+  $('#meter').innerHTML = GROUPS.map(g => `<i style="width:${(T[g.key] / S.budget * 100).toFixed(2)}%;background:${g.color}"></i>`).join('');
+  // tabs
+  $('#tabs').innerHTML = CATS.map(c => {
+    const n = c.invest ? Object.keys(S.inv).length : c.items.reduce((s, a) => s + (S.owned[a[0]] || 0), 0);
+    return `<button class="tab" role="tab" data-tab="${c.id}" aria-selected="${c.id === S.tab}">${esc(c.name)}${n ? `<span class="ct">${n}</span>` : ''}</button>`;
+  }).join('');
+  $('#catIntro').textContent = cat.intro;
+  // grid
+  if (cat.invest) {
+    $('#grid').innerHTML = INVEST.map(i => {
+      const amt = S.inv[i.id] || 0;
+      const ret = i.special === 'angel' ? 'Big hit or bust' : i.special === 'resto' ? 'Feast or famine' : `~${(i.mean * 100).toFixed(1)}%/yr`;
+      return `<article class="item ${amt ? 'owned' : ''}">
+        <h3>${esc(i.name)}</h3>
+        <div class="tags"><span class="tag up">${ret}</span>${riskBars(i.risk)}</div>
+        <p class="blurb">${esc(i.blurb)}</p>
+        <div class="invamt num">${amt ? full(amt) : '$0'}</div>
+        <div class="chips">
+          ${steps().map(s => `<button data-inv="${i.id}" data-add="${s}">+${fmt(s)}</button>`).join('')}
+          <button data-inv="${i.id}" data-add="all">All cash</button>
+          ${amt ? `<button data-inv="${i.id}" data-add="clear">Take out</button>` : ''}
+        </div>
+      </article>`;
+    }).join('');
+  } else {
+    $('#grid').innerHTML = cat.items.map(a => {
+      const it = ITEMS[a[0]], q = S.owned[it.id] || 0, afford = T.cash >= it.price;
+      return `<article class="item ${q ? 'owned' : ''}">
+        <div class="price num">${fmt(it.price)}</div>
+        <h3>${esc(it.name)}</h3>
+        <div class="tags">${itemTags(it)}</div>
+        <p class="blurb">${esc(it.blurb)}</p>
+        <div class="buyrow">
+          ${q ? `<span class="qty"><button data-sell="${it.id}" aria-label="Remove one ${esc(it.name)}">−</button><span>${q}</span><button data-buy="${it.id}" aria-label="Add another ${esc(it.name)}">+</button></span>`
+              : `<button class="btn ${afford ? '' : 'ghost'}" data-buy="${it.id}">${it.cat === 'give' ? 'Give' : it.gone ? 'Book it' : 'Buy'}</button>`}
+          ${!afford && !q ? `<span class="hint">${fmt(it.price - T.cash)} short</span>` : ''}
+        </div>
+      </article>`;
+    }).join('');
+  }
+  // receipt
+  const rows = [];
+  for (const [id, q] of Object.entries(S.owned)) { const it = ITEMS[id]; rows.push(`<div class="row"><span>${q > 1 ? q + '× ' : ''}${esc(it.name)}</span><span class="num">${fmt(it.price * q)}</span></div>`); }
+  for (const [id, v] of Object.entries(S.inv)) rows.push(`<div class="row"><span>${esc(INV[id].name)}</span><span class="num">${fmt(v)}</span></div>`);
+  $('#rlist').innerHTML = rows.length ? rows.join('') : '<div class="empty">Nothing yet. Start with a car — you deserve it.</div>';
+  $('#split').innerHTML = GROUPS.map(g => `<div class="row"><span><i class="dot" style="background:${g.color}"></i>${g.label}</span><span class="num">${fmt(T[g.key])}</span></div>`).join('')
+    + `<div class="row"><span><i class="dot" style="background:var(--chip)"></i>Cash</span><span class="num">${fmt(T.cash)}</span></div>`;
+  const idle = T.cash / S.budget;
+  $('#idleHint').textContent = idle > 0.25 ? `${Math.round(idle * 100)}% of your money is sitting as cash, earning nothing. Inflation will nibble at it.` : idle < 0.01 ? 'Almost everything is spent or invested. Bold.' : '';
+}
+function buy(id) {
+  const it = ITEMS[id], T = totals();
+  if (T.cash < it.price) return toast(`You're ${fmt(it.price - T.cash)} short for the ${it.name}.`);
+  S.owned[id] = (S.owned[id] || 0) + 1; save(); renderShop();
+}
+function sell(id) { if (!S.owned[id]) return; if (--S.owned[id] <= 0) delete S.owned[id]; save(); renderShop(); }
+function invest(id, add) {
+  const def = INV[id], T = totals(), cur = S.inv[id] || 0;
+  if (add === 'clear') { delete S.inv[id]; save(); return renderShop(); }
+  let amt = add === 'all' ? T.cash : Math.min(+add, T.cash);
+  if (amt <= 0) return toast('No cash left. Take money out of something else first.');
+  if (def.min && cur + amt < def.min) {
+    if (cur + T.cash < def.min) return toast(`${def.name} needs at least ${fmt(def.min)}.`);
+    amt = def.min - cur;
+  }
+  S.inv[id] = cur + amt; save(); renderShop();
+}
+
+// ---------- Simulation ----------
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function simulate(seed) {
+  const r = rng(seed);
+  const g = () => { let u = 0, v = 0; while (!u) u = r(); while (!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const T = totals();
+  let cash = T.cash, upkeepTotal = 0, inDebt = false;
+  const hold = Object.entries(S.owned).map(([id, q]) => ({ it: ITEMS[id], q, value: ITEMS[id].gone ? 0 : ITEMS[id].price * q })).filter(h => !h.it.gone);
+  const inv = Object.entries(S.inv).map(([id, v]) => ({ d: INV[id], value: v, cost: v, closed: false }));
+  let fun = 0, legacy = 0;
+  for (const [id, q] of Object.entries(S.owned)) { const it = ITEMS[id]; fun += (it.fun || 0) * Math.sqrt(q); legacy += (it.legacy || 0) * Math.sqrt(q); }
+  const snap = y => ({ y, inv: inv.reduce((s, p) => s + p.value, 0), stuff: hold.reduce((s, h) => s + h.value, 0), cash });
+  const years = [snap(0)], log = [];
+  for (let y = 1; y <= 10; y++) {
+    const zm = g(), notes = [];
+    const mkt = Math.exp(Math.log(1.09) - 0.0128 + 0.16 * zm) - 1;
+    if (zm < -1.3) notes.push(`Recession. The stock market drops ${Math.round(-mkt * 100)}%.`);
+    else if (zm < -0.7) notes.push(`Rough year for markets: stocks ${Math.round(mkt * 100)}%.`);
+    else if (zm > 1.3) notes.push(`Boom year. Stocks rip ${Math.round(mkt * 100)}% higher.`);
+    for (const p of inv) {
+      const d = p.d;
+      if (d.special === 'angel') {
+        if (y === 8) {
+          let m = 0; const hits = [];
+          for (let k = 0; k < 10; k++) { const u = r(); const x = u < 0.55 ? 0 : u < 0.80 ? 1 : u < 0.92 ? 3 : u < 0.98 ? 10 : 50; m += x / 10; if (x >= 10) hits.push(x); }
+          p.value = p.cost * m;
+          notes.push(hits.length ? `Angel portfolio pays out: ${hits.map(h => h + '×').join(' and ')} exit${hits.length > 1 ? 's' : ''}. Your ${fmt(p.cost)} is now ${fmt(p.value)}.` : `Your startups mostly fizzled. ${fmt(p.cost)} turned into ${fmt(p.value)}.`);
+        }
+        continue;
+      }
+      if (d.special === 'resto') {
+        if (p.closed) continue;
+        if (y <= 3 && r() < 0.27) { p.value *= 0.05; p.closed = true; notes.push(`Your restaurant closes its doors. You sell the equipment for ${fmt(p.value)}.`); continue; }
+        p.value *= Math.max(0.5, 1.12 + 0.15 * g());
+        if (y === 4) notes.push('Your restaurant survives year three and gets a glowing review.');
+        continue;
+      }
+      const z = d.rho * zm + Math.sqrt(1 - d.rho * d.rho) * g();
+      const ret = Math.exp(Math.log(1 + d.mean) - d.vol * d.vol / 2 + d.vol * z) - 1;
+      p.value *= 1 + ret;
+      if (d.id === 'btc' && Math.abs(ret) > 0.5) notes.push(ret > 0 ? `Bitcoin soars ${Math.round(ret * 100)}%.` : `Crypto winter: Bitcoin falls ${Math.round(-ret * 100)}%.`);
+      if (d.id === 'tech' && ret > 0.4) notes.push(`AI mania: Big Tech up ${Math.round(ret * 100)}%.`);
+    }
+    let upkeep = 0;
+    for (const h of hold) {
+      const it = h.it, vol = it.vol || 0.03, c = it.corr ?? (it.cat === 'homes' ? 0.3 : 0.1);
+      upkeep += (it.upkeep || 0) * h.value + (it.flat || 0) * h.q;
+      h.value *= Math.max(0.05, 1 + it.rate + vol * (c * zm + Math.sqrt(1 - c * c) * g()));
+    }
+    upkeepTotal += upkeep; cash -= upkeep;
+    if (cash < 0) {
+      const liquid = inv.filter(p => !p.d.special && p.value > 0), pool = liquid.reduce((s, p) => s + p.value, 0);
+      const take = Math.min(-cash, pool);
+      if (take > 0) { liquid.forEach(p => p.value -= take * p.value / pool); cash += take; notes.push(`Upkeep bills of ${fmt(upkeep)} force you to sell ${fmt(take)} of investments.`); }
+      if (cash < 0) {
+        if (!inDebt) notes.push('You are out of cash. The bank is now lending you money at 9%.');
+        cash *= 1.09; inDebt = true;
+      }
+    } else if (upkeep > 0.04 * (years[y - 1].inv + years[y - 1].stuff + years[y - 1].cash) && y === 1) {
+      notes.push(`Owning your stuff costs ${fmt(upkeep)} a year: crew, staff, insurance, fuel and property tax.`);
+    }
+    if (y === 2 && hold.some(h => h.it.id === 'yacht' || h.it.id === 'sunseeker')) notes.push('Your yacht captain asks for a raise. You say yes.');
+    if (y === 5 && hold.some(h => h.it.cat === 'cars' && h.it.rate < -0.1)) notes.push('Your fancy car is now worth about half what you paid.');
+    if (y === 6 && hold.some(h => h.it.id === 'birkin')) notes.push('Hermès raises prices again. Your Birkin is worth more than retail.');
+    if (y === 9 && legacy > 0) notes.push('A thank-you letter arrives from someone your giving helped.');
+    if (!notes.length) notes.push('A quiet year. Markets drift, life goes on.');
+    years.push(snap(y));
+    log.push({ y, notes });
+  }
+  const end = years[10], net = end.inv + end.stuff + end.cash;
+  return { years, log, net, end, upkeepTotal, fun, legacy, T };
+}
+
+// ---------- Results ----------
+function verdict(mult) {
+  if (mult >= 2) return ['Dynasty', 'builder', 'You more than doubled it. Your grandkids will be insufferable.'];
+  if (mult >= 1.2) return ['Old money', 'in the making', 'You enjoyed it and still came out ahead.'];
+  if (mult >= 0.7) return ['Comfortably', 'rich', 'You spent a lot and kept most of it. Balanced, as all things should be.'];
+  if (mult >= 0.25) return ['Lived', 'large', 'The memories are priceless. The balance sheet is less impressive.'];
+  if (mult > 0) return ['Where did', 'it go?', 'Upkeep, depreciation and a few bold bets ate most of the fortune.'];
+  return ['Broke, but', 'did you see the yacht?', 'You ended the decade in debt. At least the stories are good.'];
+}
+const score = (x, k) => Math.round(100 * (1 - Math.exp(-x / k)));
+function chartSVG(years, budget) {
+  const W = 640, H = 260, L = 64, R = 14, Tp = 14, B = 34;
+  const tot = years.map(y => y.inv + y.stuff + y.cash);
+  const max = Math.max(budget, ...tot, ...years.map(y => y.inv + y.stuff + Math.max(0, y.cash))) * 1.08;
+  const min = Math.min(0, ...tot);
+  const sx = i => L + i * (W - L - R) / 10, sy = v => Tp + (max - v) / (max - min) * (H - Tp - B);
+  const ticks = []; const n = 4; for (let i = 0; i <= n; i++) ticks.push(min + (max - min) * i / n);
+  const invPts = years.map((y, i) => [sx(i), sy(Math.max(0, y.inv))]);
+  const stuffPts = years.map((y, i) => [sx(i), sy(Math.max(0, y.inv) + y.stuff)]);
+  const area = (upper, lower, color, op) => `<polygon points="${upper.map(p => p.join(',')).join(' ')} ${lower.slice().reverse().map(p => p.join(',')).join(' ')}" fill="${color}" fill-opacity="${op}" stroke="none"/>`;
+  const base = years.map((y, i) => [sx(i), sy(0)]);
+  const line = tot.map((v, i) => `${i ? 'L' : 'M'}${sx(i)},${sy(v)}`).join('');
+  const last = tot[10];
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Net worth over ten years">
+    ${ticks.map(t => `<line x1="${L}" x2="${W - R}" y1="${sy(t)}" y2="${sy(t)}" stroke="var(--line)" stroke-width="1"/><text x="${L - 8}" y="${sy(t) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${fmt(t)}</text>`).join('')}
+    ${area(invPts, base, 'var(--good)', 0.22)}
+    ${area(stuffPts, invPts, '#3a7bd5', 0.18)}
+    <line x1="${L}" x2="${W - R}" y1="${sy(budget)}" y2="${sy(budget)}" stroke="var(--accent)" stroke-dasharray="4 4" stroke-width="1.2"/>
+    <text x="${W - R}" y="${sy(budget) - 6}" text-anchor="end" font-size="11" fill="var(--accent)" font-family="Figtree, sans-serif">Starting fortune</text>
+    <path d="${line}" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
+    <circle cx="${sx(10)}" cy="${sy(last)}" r="4.5" fill="var(--ink)"/>
+    ${years.map((y, i) => `<text x="${sx(i)}" y="${H - 12}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${i === 0 ? 'Now' : 'Y' + i}</text>`).join('')}
+  </svg>`;
+}
+let lastSeed = 0;
+function runSim(seed) {
+  lastSeed = seed;
+  const R = simulate(seed), mult = R.net / S.budget, [a, b, line] = verdict(mult);
+  const life = score(R.fun, 60), leg = score(R.legacy, 35);
+  const chg = R.net - S.budget;
+  $('#results').innerHTML = `
+    <div class="reshead">
+      <span class="eyebrow">${esc(S.src)} · ${fmt(S.budget)} · ten years later</span>
+      <h1 class="title">${esc(a)} <em>${esc(b)}</em></h1>
+      <p style="margin:0;color:var(--muted);max-width:60ch">${esc(line)}</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="eyebrow">Net worth now</div><div class="v">${fmt(R.net)}</div><div class="d ${chg >= 0 ? 'up' : 'down'}">${chg >= 0 ? '▲' : '▼'} ${fmt(Math.abs(chg))} (${(mult).toFixed(2)}× your start)</div></div>
+      <div class="stat"><div class="eyebrow">Lifestyle score</div><div class="v">${life}<small style="font-size:18px;color:var(--muted)">/100</small></div><div class="d">From cars, homes, toys and trips you enjoyed.</div></div>
+      <div class="stat"><div class="eyebrow">Legacy score</div><div class="v">${leg}<small style="font-size:18px;color:var(--muted)">/100</small></div><div class="d">${R.T.gave ? `You gave away ${fmt(R.T.gave)}.` : 'You gave nothing away. There is still time.'}</div></div>
+      <div class="stat"><div class="eyebrow">Upkeep paid</div><div class="v">${fmt(R.upkeepTotal)}</div><div class="d">Staff, fuel, crew, insurance, taxes over 10 years.</div></div>
+    </div>
+    <div class="cols">
+      <div class="panel">
+        <h2>Net worth, year by year</h2>
+        <div class="chart">${chartSVG(R.years, S.budget)}</div>
+        <div class="legend"><span><i class="dot" style="background:var(--good);opacity:.6"></i>Investments</span><span><i class="dot" style="background:#3a7bd5;opacity:.6"></i>Homes, cars & things</span><span><i class="dot" style="background:var(--ink)"></i>Total net worth</span></div>
+        <h2 style="margin-top:22px">Where it ended up</h2>
+        <table class="break"><tbody>
+          <tr><td>Investments</td><td>${full(R.end.inv)}</td></tr>
+          <tr><td>Homes, cars, toys & collectibles</td><td>${full(R.end.stuff)}</td></tr>
+          <tr><td>${R.end.cash < 0 ? 'Debt' : 'Cash'}</td><td class="${R.end.cash < 0 ? 'down' : ''}">${full(R.end.cash)}</td></tr>
+          <tr><td>Spent on experiences</td><td>${full(R.T.spent)}</td></tr>
+          <tr><td>Given away</td><td>${full(R.T.gave)}</td></tr>
+        </tbody></table>
+      </div>
+      <div class="panel">
+        <h2>The decade</h2>
+        <ol class="log">${R.log.map(l => `<li><span class="yr">Year ${l.y}</span><span>${l.notes.map(esc).join(' ')}</span></li>`).join('')}</ol>
+      </div>
+    </div>
+    <div class="resactions">
+      <button class="btn gold" id="rerollBtn">Replay the decade with new luck</button>
+      <button class="btn" id="backShopBtn">Change my purchases</button>
+      <button class="btn ghost" id="newGameBtn">Start a new fortune</button>
+    </div>`;
+  show('results');
+}
+
+// ---------- Events ----------
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.f) { const f = FORTUNES[+b.dataset.f]; return begin(f.amt, f.src); }
+  if (b.id === 'resumeBtn') { S = load(); show('shop'); return renderShop(true); }
+  if (b.id === 'customGo') {
+    const v = +($('#customAmt').value.replace(/[^0-9.]/g, ''));
+    if (!(v >= 1e6)) return toast('Enter at least $1,000,000. This is a windfall, after all.');
+    if (v > 1e11) return toast('Let\'s keep it under $100 billion.');
+    return begin(Math.round(v), 'Custom windfall');
+  }
+  if (b.dataset.tab) { S.tab = b.dataset.tab; save(); renderShop(); return; }
+  if (b.dataset.buy) return buy(b.dataset.buy);
+  if (b.dataset.sell) return sell(b.dataset.sell);
+  if (b.dataset.inv) return invest(b.dataset.inv, b.dataset.add);
+  if (b.id === 'simBtn' || b.id === 'simBtnTop') {
+    if (totals().cash === S.budget) return toast('Buy or invest in something first.');
+    return runSim((Math.random() * 2 ** 31) | 0);
+  }
+  if (b.id === 'rerollBtn') return runSim((Math.random() * 2 ** 31) | 0);
+  if (b.id === 'backShopBtn') { show('shop'); return renderShop(true); }
+  if (b.id === 'restartBtn' || b.id === 'newGameBtn') { try { localStorage.removeItem(KEY); } catch (er) {} S = null; renderStart(); return show('start'); }
+});
+$('#customAmt').addEventListener('keydown', e => { if (e.key === 'Enter') $('#customGo').click(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (!$('#start').hidden) drawGuilloche(); });
+new MutationObserver(() => { if (!$('#start').hidden) drawGuilloche(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+renderStart();
+})();
+</script>
+</body>
+</html>
