@@ -38,4 +38,4 @@ npm i
 ## License & Use
 Personal use. Ensure you comply with each provider’s terms (Meta, publishers, APIs). This project is a template and comes with no warranties.
 ## Bonus: Spend the Windfall (game)
-`windfall.html` is a standalone money game. Pick a fortune ($2M to $1B, or your own number), spend it on cars, homes, travel, fashion, watches, yachts, jets, art, giving and investments at approximate real-world prices, then fast-forward ten years to see your net worth, Lifestyle score and Legacy score. Open `/windfall.html` on the deployed site, or open the file directly in a browser.
+`windfall.html` is a standalone money game. Pick a fortune (AED 3.67M to AED 100M, or your own number up to AED 100M), spend it on cars, homes, travel, fashion, watches, yachts, jets, art, giving and investments at approximate real-world prices in UAE dirhams, then fast-forward ten years to see your net worth, Lifestyle score and Legacy score. Open `/windfall.html` on the deployed site, or open the file directly in a browser.

@@ -161,17 +161,17 @@ table.break td:last-child { text-align: right; font-family: var(--f-mono); font-
       <canvas id="guilloche" width="1040" height="1040" aria-hidden="true"></canvas>
       <span class="eyebrow">A money game · real-world prices</span>
       <h1>Spend the <span>Windfall</span></h1>
-      <p>You just came into serious money. Pick how much, then go shopping: supercars, mansions, first-class trips, watches, yachts, art, index funds, Bitcoin, charity. When you're done, fast-forward ten years and see what's left.</p>
+      <p>You just came into serious money. Pick how much (up to AED 100 million), then go shopping: supercars, mansions, first-class trips, watches, yachts, art, index funds, Bitcoin, charity. When you're done, fast-forward ten years and see what's left.</p>
       <div id="resume"></div>
     </div>
     <div class="fortunes" id="fortunes"></div>
     <div class="custom">
       <label class="eyebrow" for="customAmt">Or name your own number</label>
-      <input id="customAmt" inputmode="numeric" placeholder="$7,500,000" autocomplete="off">
+      <input id="customAmt" inputmode="numeric" placeholder="AED 7,500,000" autocomplete="off">
       <button class="btn ghost" id="customGo">Start with this</button>
     </div>
     <div class="rules">
-      <div><b>Prices are real</b><p>Approximate 2025–26 US retail or market prices. Your cash and your conscience are the only limits.</p></div>
+      <div><b>Prices are real</b><p>Approximate 2025–26 retail or market prices, in UAE dirhams at the AED 3.67 per US dollar peg.</p></div>
       <div><b>Things cost money to own</b><p>Yachts, jets and mansions carry yearly upkeep. Cars lose value. Some watches, homes and art gain it.</p></div>
       <div><b>Ten years later</b><p>Markets swing year by year. You get a net worth, a Lifestyle score and a Legacy score.</p></div>
     </div>
@@ -181,7 +181,7 @@ table.break td:last-child { text-align: right; font-family: var(--f-mono); font-
     <div class="topbar">
       <div class="balance">
         <span class="eyebrow" id="scenarioLabel">Cash left to spend</span>
-        <div class="big num" id="cashBig">$0</div>
+        <div class="big num" id="cashBig">AED 0</div>
         <div class="of" id="cashOf"></div>
         <div class="meter" id="meter"></div>
       </div>
@@ -225,7 +225,7 @@ const CATS = [
     ['296', 'Ferrari 296 GTB', 345000, '819 hp V6 hybrid. Ferrari may ask what else you own.', { rate: -0.06, upkeep: 0.04, fun: 9 }],
     ['cullinan', 'Rolls-Royce Cullinan Series II', 425000, 'A drawing room on wheels. Umbrellas in the doors.', { rate: -0.12, upkeep: 0.03, fun: 9 }],
     ['revuelto', 'Lamborghini Revuelto', 608000, 'V12 hybrid, 1,001 hp. Sold out for years.', { rate: -0.04, upkeep: 0.04, fun: 10 }],
-    ['tourbillon', 'Bugatti Tourbillon', 4100000, 'One of 250. An $80,000 oil service comes with the territory.', { rate: 0.03, upkeep: 0.03, fun: 15, vol: 0.08 }],
+    ['tourbillon', 'Bugatti Tourbillon', 4100000, 'One of 250. An AED 300,000 oil service comes with the territory.', { rate: 0.03, upkeep: 0.03, fun: 15, vol: 0.08 }],
   ]},
   { id: 'homes', name: 'Homes', intro: 'Typical asking prices for the neighborhood. Real estate usually appreciates, but taxes, insurance and staff add up.', items: [
     ['austin', 'Starter home, Austin TX', 450000, '3 bed, 2 bath, a yard, and a very good taco nearby.', { rate: 0.035, upkeep: 0.025, fun: 3 }],
@@ -235,12 +235,12 @@ const CATS = [
     ['island', 'Private island, Bahamas', 12000000, '50 acres, a beach on every side, generators and a staff house.', { rate: 0.03, upkeep: 0.04, fun: 20 }],
     ['malibu', 'Beachfront house, Malibu', 14000000, 'Carbon Beach. Sunsets included, fire insurance not.', { rate: 0.045, upkeep: 0.02, fun: 16 }],
     ['aspen', 'Ski-in chalet, Aspen', 18000000, '7 bedrooms, heated driveway, boot room bigger than most apartments.', { rate: 0.04, upkeep: 0.02, fun: 16 }],
-    ['bh', 'Mansion, Beverly Hills', 28000000, 'Gated, 12,000 sq ft, screening room, infinity pool.', { rate: 0.04, upkeep: 0.02, fun: 20 }],
-    ['nyc', "Penthouse, Billionaires' Row", 45000000, 'Full-floor on 57th Street. Central Park out every window.', { rate: 0.025, upkeep: 0.02, fun: 22 }],
+    ['bh', 'Mansion, Beverly Hills', 24000000, 'Gated, 12,000 sq ft, screening room, infinity pool.', { rate: 0.04, upkeep: 0.02, fun: 20 }],
+    ['nyc', "Penthouse, Billionaires' Row", 22000000, 'Half-floor on 57th Street. Central Park out every window.', { rate: 0.025, upkeep: 0.02, fun: 22 }],
   ]},
   { id: 'travel', name: 'Travel', intro: "Experiences don't hold value. You pay once and keep the memories. They count toward your Lifestyle score.", items: [
     ['biz', 'Business class to Tokyo', 7500, 'Round trip, lie-flat seat, a very good wagyu dinner on arrival.', { gone: true, fun: 2 }],
-    ['superbowl', 'Super Bowl, lower-bowl seats for two', 15000, 'Plus a flight, a hotel, and a $20 beer.', { gone: true, fun: 4 }],
+    ['superbowl', 'Super Bowl, lower-bowl seats for two', 15000, 'Plus a flight, a hotel, and a AED 75 beer.', { gone: true, fun: 4 }],
     ['monaco', 'Monaco Grand Prix, Paddock Club for two', 25000, 'Champagne over the pit lane. Earplugs provided.', { gone: true, fun: 5 }],
     ['europe', 'Two weeks in Europe, five-star, for two', 40000, 'Paris, Amalfi, Santorini. Suites the whole way.', { gone: true, fun: 5 }],
     ['maldives', 'Maldives overwater villa, one week', 45000, 'Glass floor, private pool, a slide straight into the lagoon.', { gone: true, fun: 6 }],
@@ -270,27 +270,27 @@ const CATS = [
   ]},
   { id: 'toys', name: 'Toys', intro: 'Boats and aircraft lose value and are expensive to run. Budget roughly 10% of a yacht\'s price every year for crew, docking and fuel.', items: [
     ['jetski', 'Sea-Doo jet ski', 15000, 'Two seats, 300 hp, a trailer to match.', { rate: -0.12, upkeep: 0.06, fun: 2 }],
-    ['horse', 'Thoroughbred yearling', 500000, 'Kentucky bloodlines. Training runs about $60K a year.', { rate: -0.15, flat: 60000, fun: 5, vol: 0.3 }],
+    ['horse', 'Thoroughbred yearling', 500000, 'Kentucky bloodlines. Training runs about AED 220K a year.', { rate: -0.15, flat: 60000, fun: 5, vol: 0.3 }],
     ['heli', 'Robinson R66 helicopter', 1450000, '5 seats, turbine engine, lands on your lawn.', { rate: -0.05, upkeep: 0.15, fun: 9 }],
     ['sunseeker', 'Sunseeker 65 sport yacht', 3500000, '65 ft, 3 cabins, 34 knots.', { rate: -0.07, upkeep: 0.10, fun: 12 }],
-    ['cj4', 'Cessna Citation CJ4 Gen2', 11500000, 'Light jet, 10 seats, coast to coast with one stop. About $1.2M a year to operate.', { rate: -0.06, flat: 1200000, fun: 16 }],
-    ['yacht', '50 m superyacht', 45000000, '6 guest cabins, crew of 12, jacuzzi on the sundeck.', { rate: -0.05, upkeep: 0.10, fun: 28 }],
-    ['g700', 'Gulfstream G700', 78000000, 'Flagship business jet, 7,750 nm range. Roughly $4M a year to fly and staff.', { rate: -0.05, flat: 4000000, fun: 30 }],
+    ['cj4', 'Cessna Citation CJ4 Gen2', 11500000, 'Light jet, 10 seats, coast to coast with one stop. About AED 4.4M a year to operate.', { rate: -0.06, flat: 1200000, fun: 16 }],
+    ['yacht', '35 m superyacht', 18000000, '5 guest cabins, crew of 7, jacuzzi on the sundeck.', { rate: -0.05, upkeep: 0.10, fun: 28 }],
+    ['praetor', 'Embraer Praetor 600', 21500000, 'Super-midsize jet, Dubai to London nonstop. Roughly AED 7M a year to fly and staff.', { rate: -0.05, flat: 1900000, fun: 26 }],
   ]},
   { id: 'art', name: 'Art & Collectibles', intro: 'Recent auction-level prices. Blue-chip art has historically appreciated, with big swings and insurance costs.', items: [
     ['charizard', '1st Edition Charizard, PSA 10', 400000, 'The holy grail of Pokémon cards.', { rate: 0.04, upkeep: 0.005, fun: 4, vol: 0.25, corr: 0.4 }],
     ['banksy', 'Banksy signed print', 250000, '"Girl with Balloon", signed edition of 150.', { rate: 0.05, upkeep: 0.005, fun: 3, vol: 0.15, corr: 0.4 }],
     ['warhol', 'Andy Warhol Marilyn screenprint', 450000, 'From the 1967 portfolio of ten.', { rate: 0.05, upkeep: 0.005, fun: 4, vol: 0.12, corr: 0.4 }],
     ['basquiat', 'Basquiat painting', 12000000, 'A mid-size 1982 canvas. Museums will ask to borrow it.', { rate: 0.06, upkeep: 0.008, fun: 12, vol: 0.18, corr: 0.5 }],
-    ['trex', 'T. rex skeleton', 30000000, 'Real fossil, 40 feet long. Needs a very tall living room.', { rate: 0.03, upkeep: 0.01, fun: 20, vol: 0.1 }],
+    ['trike', 'Triceratops skeleton', 7700000, 'Real fossil, 8 m long. Needs a very tall living room.', { rate: 0.03, upkeep: 0.01, fun: 16, vol: 0.1 }],
   ]},
   { id: 'give', name: 'Giving', intro: 'Money given away is gone from your balance and counts toward your Legacy score.', items: [
-    ['wells', 'Clean water wells for 20 villages', 200000, 'Roughly $10K per well, serving thousands of people.', { gone: true, legacy: 6 }],
+    ['wells', 'Clean water wells for 20 villages', 200000, 'Roughly AED 37K per well, serving thousands of people.', { gone: true, legacy: 6 }],
     ['mortgage', "Pay off your parents' mortgage", 300000, 'The best call you\'ll ever make.', { gone: true, legacy: 5, fun: 2 }],
     ['college', 'College funds for 5 nieces and nephews', 500000, 'Four years of tuition, room and board each.', { gone: true, legacy: 7, fun: 1 }],
     ['scholar', 'Endowed scholarship at your old school', 2000000, 'Funds a full ride every year, forever, with your name on it.', { gone: true, legacy: 10 }],
     ['wing', 'A hospital wing with your name on it', 25000000, 'A pediatric wing, plus a plaque in the lobby.', { gone: true, legacy: 30 }],
-    ['foundation', 'Start a family foundation', 100000000, 'Grants for decades. Board meetings optional.', { gone: true, legacy: 60 }],
+    ['foundation', 'Start a family foundation', 13600000, 'Grants for decades. Board meetings optional.', { gone: true, legacy: 60 }],
   ]},
   { id: 'invest', name: 'Investments', invest: true, intro: 'Money that works while you sleep. Expected returns are long-run averages; any single year can be very different.' },
 ];
@@ -299,14 +299,17 @@ const INVEST = [
   { id: 'tsy', name: 'US Treasury bonds', mean: 0.043, vol: 0.05, rho: -0.2, risk: 1, blurb: 'Lend to the government. Often rises when stocks fall.' },
   { id: 'gold', name: 'Gold', mean: 0.05, vol: 0.15, rho: -0.1, risk: 2, blurb: 'A hedge for nervous years. Pays no income.' },
   { id: 'spx', name: 'S&P 500 index fund', mean: 0.09, vol: 0.16, rho: 1, risk: 3, blurb: '500 big US companies for a 0.03% fee.' },
-  { id: 'apt', name: 'Apartment building', mean: 0.075, vol: 0.09, rho: 0.3, risk: 2, min: 3000000, blurb: '24 units, rent checks every month. Minimum $3M.' },
+  { id: 'apt', name: 'Apartment building', mean: 0.075, vol: 0.09, rho: 0.3, risk: 2, min: 11000000, blurb: '24 units, rent checks every month. Minimum AED 11M.' },
   { id: 'tech', name: 'Big Tech stocks', mean: 0.12, vol: 0.30, rho: 0.85, risk: 4, blurb: 'Nvidia, Apple, Microsoft, Alphabet. Higher highs, lower lows.' },
   { id: 'btc', name: 'Bitcoin', mean: 0.20, vol: 0.65, rho: 0.4, risk: 5, blurb: 'Could triple. Could halve. Sometimes in the same year.' },
-  { id: 'angel', name: 'Angel investing (10 startups)', special: 'angel', risk: 5, min: 250000, blurb: 'Most startups fail; one hit can pay for all of them. Locked up for 8 years. Minimum $250K.' },
-  { id: 'resto', name: 'Open a restaurant', special: 'resto', risk: 5, min: 1500000, blurb: 'Your name on the door. Most close in the first three years. Minimum $1.5M.' },
+  { id: 'angel', name: 'Angel investing (10 startups)', special: 'angel', risk: 5, min: 1000000, blurb: 'Most startups fail; one hit can pay for all of them. Locked up for 8 years. Minimum AED 1M.' },
+  { id: 'resto', name: 'Open a restaurant', special: 'resto', risk: 5, min: 5500000, blurb: 'Your name on the door. Most close in the first three years. Minimum AED 5.5M.' },
 ];
+// Prices above are in US dollars; convert at the AED peg and round to 3 significant figures
+const USD_AED = 3.6725;
+const nice = v => { const p = 10 ** Math.max(0, Math.floor(Math.log10(v)) - 2); return Math.round(v / p) * p; };
 const ITEMS = {};
-CATS.forEach(c => (c.items || []).forEach(a => { const [id, name, price, blurb, o] = a; ITEMS[id] = { id, name, price, blurb, cat: c.id, ...o }; }));
+CATS.forEach(c => (c.items || []).forEach(a => { const [id, name, price, blurb, o] = a; ITEMS[id] = { id, name, blurb, cat: c.id, ...o, price: nice(price * USD_AED), flat: o.flat ? nice(o.flat * USD_AED) : 0 }; }));
 const INV = Object.fromEntries(INVEST.map(i => [i.id, i]));
 const GROUPS = [
   { key: 'spent', label: 'Experiences', color: 'var(--accent)' },
@@ -316,11 +319,11 @@ const GROUPS = [
 ];
 
 const FORTUNES = [
-  { amt: 2e6, src: 'Scratch-off jackpot', sub: 'Gas station ticket, $20 well spent.' },
+  { amt: 3.67e6, src: 'Duty-free raffle', sub: 'A US$1M ticket bought at DXB on the way to a wedding.' },
   { amt: 10e6, src: 'Startup acquisition', sub: 'Your 4% stake finally paid off.' },
+  { amt: 25e6, src: 'Raffle grand prize', sub: 'A ticket you almost didn\'t buy.' },
   { amt: 50e6, src: 'Mystery inheritance', sub: 'A great-aunt you never met.' },
-  { amt: 250e6, src: 'Powerball lump sum', sub: 'After federal tax. Change your number.' },
-  { amt: 1e9, src: 'Tech founder IPO', sub: 'Officially a billionaire.' },
+  { amt: 100e6, src: 'Lottery jackpot', sub: 'The top prize. Tax-free, too.' },
 ];
 
 // ---------- Helpers ----------
@@ -329,12 +332,12 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const trimNum = x => (x >= 100 ? x.toFixed(0) : x >= 10 ? x.toFixed(1) : x.toFixed(2)).replace(/\.0+$|(\.\d*?)0+$/, '$1');
 function fmt(n) {
   const a = Math.abs(n), s = n < 0 ? '−' : '';
-  if (a >= 1e9) return s + '$' + trimNum(a / 1e9) + 'B';
-  if (a >= 1e6) return s + '$' + trimNum(a / 1e6) + 'M';
-  if (a >= 1e5) return s + '$' + Math.round(a / 1e3) + 'K';
-  return s + '$' + Math.round(a).toLocaleString('en-US');
+  if (a >= 1e9) return s + 'AED ' + trimNum(a / 1e9) + 'B';
+  if (a >= 1e6) return s + 'AED ' + trimNum(a / 1e6) + 'M';
+  if (a >= 1e5) return s + 'AED ' + Math.round(a / 1e3) + 'K';
+  return s + 'AED ' + Math.round(a).toLocaleString('en-US');
 }
-const full = n => (n < 0 ? '−' : '') + '$' + Math.round(Math.abs(n)).toLocaleString('en-US');
+const full = n => (n < 0 ? '−' : '') + 'AED ' + Math.round(Math.abs(n)).toLocaleString('en-US');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let toastT;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2600); }
@@ -411,7 +414,7 @@ function itemTags(it) {
   return t.join('');
 }
 function steps() {
-  const all = [1e4, 1e5, 1e6, 1e7, 1e8, 1e9].filter(x => x <= S.budget / 2 && x >= S.budget / 2000);
+  const all = [1e4, 1e5, 1e6, 1e7].filter(x => x <= S.budget / 2 && x >= S.budget / 2000);
   return all.slice(-3);
 }
 function renderShop(first) {
@@ -436,7 +439,7 @@ function renderShop(first) {
         <h3>${esc(i.name)}</h3>
         <div class="tags"><span class="tag up">${ret}</span>${riskBars(i.risk)}</div>
         <p class="blurb">${esc(i.blurb)}</p>
-        <div class="invamt num">${amt ? full(amt) : '$0'}</div>
+        <div class="invamt num">${amt ? full(amt) : 'AED 0'}</div>
         <div class="chips">
           ${steps().map(s => `<button data-inv="${i.id}" data-add="${s}">+${fmt(s)}</button>`).join('')}
           <button data-inv="${i.id}" data-add="all">All cash</button>
@@ -647,8 +650,8 @@ document.addEventListener('click', e => {
   if (b.id === 'resumeBtn') { S = load(); show('shop'); return renderShop(true); }
   if (b.id === 'customGo') {
     const v = +($('#customAmt').value.replace(/[^0-9.]/g, ''));
-    if (!(v >= 1e6)) return toast('Enter at least $1,000,000. This is a windfall, after all.');
-    if (v > 1e11) return toast('Let\'s keep it under $100 billion.');
+    if (!(v >= 1e6)) return toast('Enter at least AED 1,000,000. This is a windfall, after all.');
+    if (v > 1e8) return toast('The maximum is AED 100,000,000.');
     return begin(Math.round(v), 'Custom windfall');
   }
   if (b.dataset.tab) { S.tab = b.dataset.tab; save(); renderShop(); return; }
